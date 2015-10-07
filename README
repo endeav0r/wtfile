@@ -1,0 +1,12 @@
+wtfile
+
+example:
+
+./build.sh
+mkdir output
+cd output
+../wtfile /bin/ls
+grep X86 disassembly.txt | grep 64 | head -n 32
+
+to GREATLY reduce runtime, comment out the lines you don't need in:
+struct _capstone_op capstone_ops [] = {
