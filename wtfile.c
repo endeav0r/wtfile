@@ -157,8 +157,10 @@ struct _capstone_op capstone_ops [] = {
     {CS_ARCH_X86, CS_MODE_16, "X86 - 16BIT MODE"},
     {CS_ARCH_X86, CS_MODE_32, "X86 - 32BIT MODE"},
     {CS_ARCH_X86, CS_MODE_64, "X86 - 64BIT MODE"},
-    {CS_ARCH_PPC, CS_MODE_32, "PPC - 32BIT MODE"},
-    {CS_ARCH_PPC, CS_MODE_64, "PPC - 64BIT MODE"},
+    {CS_ARCH_PPC, CS_MODE_32 | CS_MODE_LITTLE_ENDIAN, "PPC - 32BIT MODE - LE"},
+    {CS_ARCH_PPC, CS_MODE_32 | CS_MODE_BIG_ENDIAN,    "PPC - 32BIT MODE - BE"},
+    {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_LITTLE_ENDIAN, "PPC - 64BIT MODE - LE"},
+    {CS_ARCH_PPC, CS_MODE_64 | CS_MODE_BIG_ENDIAN,    "PPC - 64BIT MODE - BE"},
     {-1, -1, NULL}
 };
 
@@ -196,7 +198,7 @@ void check_disassembly (const unsigned char * buf, size_t size) {
 uint32_t t;
 t = snprintf(tmp, 4096, "--------------------------------------\n");
 t += snprintf(&(tmp[t]), 4096 - t,
-             "Possible disassembly for %s starting at 0x%x, skipping 64 bytes\n",
+             "Possible disassembly for %s starting at 0x%x\n",
              cop->description, offset);
 unsigned int j;
 for (j = 0; j < 4; j++) {
@@ -205,9 +207,10 @@ for (j = 0; j < 4; j++) {
 t += snprintf(&(tmp[t]), 4096 - t, "\n");
 
 wtfile_writer_write(ww, tmp, strlen(tmp));
-offset += 63;
             }
+            if (count > 0) cs_free(insn, count);
         }
+        cs_close(&handle);
     }
 }
 
